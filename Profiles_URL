@@ -1,0 +1,24 @@
+from googlesearch import search   
+import pandas as pd
+
+class Linkedin_url:
+    def search(self,doc_path: str):
+        self.doc_path=doc_path
+        # to search 
+        new_startups = pd.read_excel("'"self.doc_path"'")
+        url = []
+        for startup in new_startups:
+            query = "site:linkedin.com/in 'CEO' OR 'Co-fondateur' " + startup 
+
+            for j in search(query, tld="co.in", num=1, stop=2, pause=5): 
+                url.append(j) 
+                print(j)
+
+    def url_arrange():
+    ### arrange the link as you like for your future analysis 
+        links = []
+        for link in links :
+            link = link.replace('fr.linkedin.com', 'linkedin.com')
+            links.append(link)
+
+        print(links)
