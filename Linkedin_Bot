@@ -4,60 +4,57 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup as bs 
 from time import sleep
+import pandas as pd
 
 
-class Linkedin_Connexion :
-    def __init__(self, path: str, identifiant: str, password: str):
-        self.path=path
-        self.identifiant=identifiant
-        self.password=password
-        driver = webdriver.Chrome(self.path)
+
+
+def connect(identifiant, password,path,url):
+    driver = webdriver.Chrome(path)
         #get the linkedin url
-        driver.get('https://www.linkedin.com/')
+    driver.get('https://www.linkedin.com/')
 
         #send your identifiant into the login zone
-        username_input = driver.find_element_by_name('session_key')
-        username_input.send_keys(self.identifiant)
+    username_input = driver.find_element_by_name('session_key')
+    username_input.send_keys(identifiant)
 
         #send your password into the password zone
-        password_input = driver.find_element_by_name('session_password')
-        password_input.send_keys(self.password)
+    password_input = driver.find_element_by_name('session_password')
+    password_input.send_keys(password)
     
         # click on the sign in button
         # we're finding Sign in text button as it seems this element is seldom to be changed
-        driver.find_element_by_class_name('sign-in-form__submit-button').click()
+    driver.find_element_by_class_name('sign-in-form__submit-button').click()
 
 
-class Linkedin_Addnote : 
+
     # visit each profile in linkedin and grab detail we want to get
-    def __init__(self, links): ### you need to get your links before, I will add the method to do it later
-        self.links=links
-        for link in self.links:
-            driver.get(link)
+    for i in url:
+        driver.get(i)
+        sleep(1.5)
+
+        try:
+                
+            #find name:
+            name = driver.find_element_by_class_name('pv-top-card--list').text #scrap the name for add it in the customize message
+            name = name.split('\n')[0]
+            name = name.rsplit(' ', 1)[0]
+                #Add a Note
+            driver.find_element_by_class_name('pv-s-profile-actions').click()  
+            sleep(1.5)
+            driver.find_element_by_xpath("//span[text()='Ajouter une note']").click()
             sleep(1.5)
 
-            try:
-                #find name:
-                name = sel.xpath('//title/text()')
-                #Add a Note
-                driver.find_element_by_xpath("//button[text() = 'Connect']").click()
-                sleep(1.5)
-                driver.find_element_by_xpath("//span[text()='Add a note']").click()
-                sleep(1.5)
+            message = "Hello" + " " + name + ",\nJe suis chargé d'études pour la French Tech Toulouse. J'ai ajouté ta startup dans notre base de données, ça te dirait de compléter sa fiche ? Voici le lien : https://airtable.com/shrVyjCYiYkch9vn8\nCes informations permettront de te proposer comme solution à nos partenaires"
+            #you can change easily the message but be carafull that the lenght respect the linkedin restriction
+            
+            elementID = driver.find_element_by_id('custom-message')
+            elementID.send_keys(message)
+            sleep(1.5)
+            driver.find_element_by_css_selector("button[aria-label='Envoyer maintenant']").click();
 
-                message = "Bonjour" + name.strip().split(' ')[0] + ",\n\nJe suis chargé d'études pour la French Tech Toulouse. J'ai ajouté ta startup dans notre base de données, est-ce que ça te dirait de compléter sa fiche ? Voici le lien : lien \nCes informations permettront de te proposer comme solution à nos partenaires business et de parler de toi à nos financeurs\nBonne journée!"
+            
+        except:
+            pass
 
-                driver.find_element_by_xpath("//textarea").send_keys(message)
-                sleep(1.5)
-        
-                driver.find_element_by_xpath("//span[text()='Done']").click()
-                sleep(1.5)
-
-                driver.find_element_by_xpath("//input[@type = 'text']").clear()
-                sleep(1.5)
-        
-            except:
-                pass
-    
-driver.quit()
     
